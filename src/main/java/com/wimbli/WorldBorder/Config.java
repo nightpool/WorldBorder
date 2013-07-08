@@ -16,6 +16,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -140,7 +142,7 @@ public class Config
 	{
 		Set<String> output = new HashSet<String>();
 
-		Iterator world = borders.keySet().iterator();
+		Iterator<String> world = borders.keySet().iterator();
 		while(world.hasNext())
 		{
 			output.add( BorderDescription((String)world.next()) );
@@ -335,26 +337,30 @@ public class Config
 	public static boolean isBorderTimerRunning()
 	{
 		if (borderTask == -1) return false;
-		return (plugin.getServer().getScheduler().isQueued(borderTask) || plugin.getServer().getScheduler().isCurrentlyRunning(borderTask));
+		return (Bukkit.getServer().getScheduler().isQueued(borderTask) || Bukkit.getServer().getScheduler().isCurrentlyRunning(borderTask));
 	}
 
-	public static void StartBorderTimer()
+	public static void StartBorderTimer(Plugin plugin)
 	{
 		StopBorderTimer();
-
-		borderTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new BorderCheckTask(), timerTicks, timerTicks);
+		
+		borderTask = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new BorderCheckTask(), timerTicks, timerTicks);
 
 		if (borderTask == -1)
 			LogWarn("Failed to start timed border-checking task! This will prevent the plugin from working. Try restarting Bukkit.");
 
 		LogConfig("Border-checking timed task started.");
 	}
+	
+	public static void StartBorderTimer(){
+		StartBorderTimer(plugin);
+	}
 
 	public static void StopBorderTimer()
 	{
 		if (borderTask == -1) return;
 
-		plugin.getServer().getScheduler().cancelTask(borderTask);
+		Bukkit.getServer().getScheduler().cancelTask(borderTask);
 		borderTask = -1;
 		LogConfig("Border-checking timed task stopped.");
 	}
@@ -374,15 +380,20 @@ public class Config
 		save(false);
 	}
 
-	public static void RestoreFillTask(String world, int fillDistance, int chunksPerRun, int tickFrequency, int x, int z, int length, int total)
+	public static void RestoreFillTask(String world, int fillDistance, int chunksPerRun, int tickFrequency, int x, int z, int length, int total, Plugin plugin)
 	{
-		fillTask = new WorldFillTask(plugin.getServer(), null, world, fillDistance, chunksPerRun, tickFrequency);
+		fillTask = new WorldFillTask(Bukkit.getServer(), null, world, fillDistance, chunksPerRun, tickFrequency);
 		if (fillTask.valid())
 		{
 			fillTask.continueProgress(x, z, length, total);
-			int task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, fillTask, 20, tickFrequency);
+			int task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, fillTask, 20, tickFrequency);
 			fillTask.setTaskID(task);
 		}
+	}
+	
+	public static void RestoreFillTask(String world, int fillDistance, int chunksPerRun, int tickFrequency, int x, int z, int length, int total)
+	{
+		RestoreFillTask(world, fillDistance, chunksPerRun, tickFrequency, x, z, length, total, plugin);
 	}
 
 
@@ -545,10 +556,10 @@ public class Config
 		cfg.set("dynmap-border-message", dynmapMessage);
 
 		cfg.set("worlds", null);
-		Iterator world = borders.entrySet().iterator();
+		Iterator<Entry<String, BorderData>> world = borders.entrySet().iterator();
 		while(world.hasNext())
 		{
-			Entry wdata = (Entry)world.next();
+			Entry<String, BorderData> wdata = (Entry<String, BorderData>)world.next();
 			String name = ((String)wdata.getKey()).replace(".", "<");
 			BorderData bord = (BorderData)wdata.getValue();
 
