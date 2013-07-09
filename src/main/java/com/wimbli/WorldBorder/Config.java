@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,28 +26,28 @@ import org.bukkit.World;
 public class Config
 {
 	// private stuff used within this class
-	private static WorldBorder plugin;
-	private static FileConfiguration cfg = null;
-	private static final Logger mcLog = Logger.getLogger("Minecraft");
+	protected static JavaPlugin plugin;
+	protected static FileConfiguration cfg = null;
+	protected static final Logger mcLog = Logger.getLogger("Minecraft");
 	public static DecimalFormat coord = new DecimalFormat("0.0");
-	private static int borderTask = -1;
+	protected static int borderTask = -1;
 	public static WorldFillTask fillTask;
 	public static WorldTrimTask trimTask;
-	private static Set<String> bypassPlayers = Collections.synchronizedSet(new LinkedHashSet<String>());
-	private static Runtime rt = Runtime.getRuntime();
+	protected static Set<String> bypassPlayers = Collections.synchronizedSet(new LinkedHashSet<String>());
+	protected static Runtime rt = Runtime.getRuntime();
 
 	// actual configuration values which can be changed
-	private static boolean shapeRound = true;
-	private static Map<String, BorderData> borders = Collections.synchronizedMap(new LinkedHashMap<String, BorderData>());
-	private static String message;
-	private static boolean DEBUG = false;
-	private static double knockBack = 3.0;
-	private static int timerTicks = 4;
-	private static boolean whooshEffect = false;
-	private static boolean portalRedirection = true;
-	private static boolean dynmapEnable = true;
-	private static String dynmapMessage;
-	private static int remountDelayTicks = 0;
+	protected static boolean shapeRound = true;
+	protected static Map<String, BorderData> borders = Collections.synchronizedMap(new LinkedHashMap<String, BorderData>());
+	protected static String message;
+	protected static boolean DEBUG = false;
+	protected static double knockBack = 3.0;
+	protected static int timerTicks = 4;
+	protected static boolean whooshEffect = false;
+	protected static boolean portalRedirection = true;
+	protected static boolean dynmapEnable = true;
+	protected static String dynmapMessage;
+	protected static int remountDelayTicks = 0;
 
 	// for monitoring plugin efficiency
 //	public static long timeUsed = 0;
@@ -448,9 +449,9 @@ public class Config
 	}
 
 
-	private static final int currentCfgVersion = 7;
+	protected static final int currentCfgVersion = 7;
 
-	public static void load(WorldBorder master, boolean logIt)
+	public static void load(JavaPlugin master, boolean logIt)
 	{	// load config from file
 		plugin = master;
 
