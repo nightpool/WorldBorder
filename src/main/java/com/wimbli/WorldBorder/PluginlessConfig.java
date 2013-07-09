@@ -8,6 +8,10 @@ public class PluginlessConfig extends Config {
 	{	// load config from file
 		plugin = master;
 		LogConfig("Using " + (ShapeName()) + " border, knockback of " + knockBack + " blocks, and timer delay of " + timerTicks + ".");
+		if (message == null || message.isEmpty())
+		{	// store defaults
+			message = "You have reached the edge of this world.";
+		}
 		StartBorderTimer();
 	}
 	
